@@ -1,17 +1,24 @@
--- Create watermark_jobs table
+-- Migration 00000000000005_watermark_system.sql
+-- Drop and recreate watermark_jobs with the correct schema
+-- (init_schema created it with a different schema)
+drop table if exists public.watermark_jobs cascade;
+
+-- Create watermark_jobs table with full schema
 create table public.watermark_jobs (
     id uuid primary key default gen_random_uuid(),
     user_id uuid references auth.users(id) on delete cascade not null,
     file_id uuid references public.files(id) on delete cascade not null,
-    status text not null check (status in ('pending', 'processing', 'completed', 'failed')),
+    status text not null default 'pending' check (status in ('pending', 'processing', 'completed', 'failed')),
     progress integer not null default 0 check (progress >= 0 and progress <= 100),
     error_message text,
+    settings jsonb default '{}'::jsonb,
+    result_file_url text,
     created_at timestamptz not null default now(),
     updated_at timestamptz not null default now()
 );
 
 -- Create watermark_regions table
-create table public.watermark_regions (
+create table if not exists public.watermark_regions (
     id uuid primary key default gen_random_uuid(),
     job_id uuid references public.watermark_jobs(id) on delete cascade not null,
     page_number integer not null check (page_number > 0),
@@ -41,6 +48,10 @@ create policy "Users can update their own watermark jobs"
     on public.watermark_jobs for update
     using (auth.uid() = user_id);
 
+create policy "Users can delete their own watermark jobs"
+    on public.watermark_jobs for delete
+    using (auth.uid() = user_id);
+
 -- Create policies for watermark_regions
 create policy "Users can view their watermark regions"
     on public.watermark_regions for select
@@ -63,6 +74,11 @@ create policy "Users can insert their watermark regions"
     );
 
 -- Create indices
-create index idx_watermark_jobs_user_id on public.watermark_jobs(user_id);
-create index idx_watermark_jobs_file_id on public.watermark_jobs(file_id);
-create index idx_watermark_regions_job_id on public.watermark_regions(job_id);
+create index if not exists idx_watermark_jobs_user_id on public.watermark_jobs(user_id);
+create index if not exists idx_watermark_jobs_file_id on public.watermark_jobs(file_id);
+create index if not exists idx_watermark_regions_job_id on public.watermark_regions(job_id);
+
+-- Updated_at trigger
+create trigger set_watermark_jobs_updated_at
+    before update on public.watermark_jobs
+    for each row execute function public.set_current_timestamp_updated_at();

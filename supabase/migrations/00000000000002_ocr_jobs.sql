@@ -20,7 +20,7 @@ create index if not exists idx_ocr_jobs_file_id on public.ocr_jobs(file_id);
 create trigger handle_ocr_jobs_updated_at
   before update on public.ocr_jobs
   for each row
-  execute function public.handle_updated_at();
+  execute function public.set_current_timestamp_updated_at();
 
 -- RLS Policies
 alter table public.ocr_jobs enable row level security;
