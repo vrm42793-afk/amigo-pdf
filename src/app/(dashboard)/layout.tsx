@@ -5,6 +5,7 @@ import { MobileUploadFab } from "@/components/mobile/mobile-upload-fab";
 
 export const dynamic = "force-dynamic";
 import { ProfileDropdown } from "@/components/dashboard/profile-dropdown";
+import { MobileNav } from "@/components/dashboard/mobile-nav";
 import {
   LayoutDashboard,
   Files,
@@ -80,13 +81,21 @@ export default async function DashboardLayout({
       {/* Main */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="flex h-14 items-center justify-between border-b border-border bg-card px-6">
-          <div />
+        <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4 md:px-6">
+          <div className="flex items-center">
+            <MobileNav />
+            <div className="md:hidden flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground font-black text-xs">
+                A
+              </span>
+              <span className="text-sm font-bold tracking-tight">AMIGO</span>
+            </div>
+          </div>
           <ProfileDropdown />
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto p-6 relative">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 relative">
           {children}
           <MobileUploadFab />
         </main>

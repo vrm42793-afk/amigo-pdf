@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Plus, Camera, Image, FileText, Loader2 } from "lucide-react";
+import { Plus, Camera, Image as ImageIcon, FileText, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import MobileScanner from "@/components/mobile/mobile-scanner";
@@ -70,7 +70,7 @@ export function MobileUploadFab() {
                 className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-card border border-border text-foreground shadow-lg hover:bg-muted transition-all text-xs font-semibold active:scale-95 cursor-pointer"
               >
                 <span>Photo Library</span>
-                <Image className="h-4 w-4 text-muted-foreground" />
+                <ImageIcon className="h-4 w-4 text-muted-foreground" />
               </motion.button>
 
               {/* Browse Files option */}

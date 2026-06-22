@@ -6,10 +6,7 @@ export const createClient = () => {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    if (process.env.NODE_ENV === "production" && !process.env.NEXT_PHASE) {
-      throw new Error("Missing Supabase environment variables");
-    }
-    return createBrowserClient<Database>("https://placeholder.supabase.co", "placeholder");
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables");
   }
 
   return createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);

@@ -18,7 +18,6 @@ import {
   FolderSymlink, 
   Check, 
   Clock, 
-  AlertCircle,
   FolderOpen
 } from "lucide-react";
 
@@ -40,11 +39,7 @@ export default function CollaborationDashboard() {
   const [message, setMessage] = useState({ text: "", type: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    loadAllData();
-  }, []);
-
-  const loadAllData = async () => {
+  const loadAllData = React.useCallback(async () => {
     setIsLoading(true);
     
     const [friendsRes, invitesRes, sharedRes] = await Promise.all([
@@ -68,7 +63,12 @@ export default function CollaborationDashboard() {
     }
 
     setIsLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadAllData();
+  }, [loadAllData]);
 
   const handleSendFriendRequest = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -375,7 +375,7 @@ export default function CollaborationDashboard() {
                 {sharedByMe.length === 0 ? (
                   <div className="flex flex-col items-center justify-center text-center text-muted-foreground py-8">
                     <Users className="h-8 w-8 text-muted-foreground/30 mb-2" />
-                    <p className="text-sm font-medium">You haven't shared anything</p>
+                    <p className="text-sm font-medium">You haven&apos;t shared anything</p>
                     <p className="text-xs mt-0.5">Go to your collections to invite friends.</p>
                   </div>
                 ) : (
@@ -388,7 +388,7 @@ export default function CollaborationDashboard() {
                            </div>
                            <div>
                              <p className="text-sm font-bold text-foreground">{share.collection?.name}</p>
-                             <p className="text-[10px] text-muted-foreground mt-0.5">Shared with: {(share as any).shared_with?.name || (share as any).shared_with?.email}</p>
+                             <p className="text-[10px] text-muted-foreground mt-0.5">Shared with: {(share as SharedCollection & { shared_with?: { name: string; email: string } }).shared_with?.name || (share as SharedCollection & { shared_with?: { name: string; email: string } }).shared_with?.email}</p>
                            </div>
                         </div>
                         <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-border text-muted-foreground">

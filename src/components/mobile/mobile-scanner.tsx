@@ -46,24 +46,53 @@ export default function MobileScanner({ onCapture, onClose }: MobileScannerProps
         await videoRef.current.play();
       }
       setState("streaming");
-    } catch (err: any) {
-      if (err.name === "NotAllowedError") {
+    } catch (err: unknown) {
+      const error = err as Error;
+      if (error.name === "NotAllowedError") {
         setError("Camera permission denied. Please allow camera access in your browser settings.");
-      } else if (err.name === "NotFoundError") {
+      } else if (error.name === "NotFoundError") {
         setError("No camera found on this device.");
       } else {
-        setError("Could not start camera: " + (err.message || "Unknown error"));
+        setError("Could not start camera: " + (error.message || "Unknown error"));
       }
     }
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     startCamera(facingMode);
     return () => {
       // Clean up stream on unmount
       streamRef.current?.getTracks().forEach((t) => t.stop());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /**
+   * Basic document filter: increases contrast and slightly desaturates.
+   * For production, a proper edge-detection algorithm (Canny) would be used.
+   */
+  const applyDocumentFilter = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number) => {
+    const imageData = ctx.getImageData(0, 0, w, h);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+
+      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+      const contrast = 1.3;
+      const factor = (259 * (contrast * 255 + 255)) / (255 * (259 - contrast * 255));
+      const adj = factor * (lum - 128) + 128;
+      const clamped = Math.min(255, Math.max(0, adj));
+
+      data[i] = clamped;
+      data[i + 1] = clamped;
+      data[i + 2] = clamped;
+    }
+
+    ctx.putImageData(imageData, 0, 0);
   }, []);
 
   const capturePhoto = useCallback(() => {
@@ -89,37 +118,8 @@ export default function MobileScanner({ onCapture, onClose }: MobileScannerProps
 
     // Stop the camera stream after capture
     streamRef.current?.getTracks().forEach((t) => t.stop());
-  }, []);
+  }, [applyDocumentFilter]);
 
-  /**
-   * Basic document filter: increases contrast and slightly desaturates.
-   * For production, a proper edge-detection algorithm (Canny) would be used.
-   */
-  function applyDocumentFilter(ctx: CanvasRenderingContext2D, w: number, h: number) {
-    const imageData = ctx.getImageData(0, 0, w, h);
-    const data = imageData.data;
-
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-
-      // Convert to grayscale luminance
-      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-
-      // Sharpen: boost contrast around mid-tone (document whites/blacks)
-      const contrast = 1.3;
-      const factor = (259 * (contrast * 255 + 255)) / (255 * (259 - contrast * 255));
-      const adj = factor * (lum - 128) + 128;
-      const clamped = Math.min(255, Math.max(0, adj));
-
-      data[i] = clamped;
-      data[i + 1] = clamped;
-      data[i + 2] = clamped;
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-  }
 
   const retake = useCallback(() => {
     setCapturedDataUrl(null);
@@ -187,6 +187,7 @@ export default function MobileScanner({ onCapture, onClose }: MobileScannerProps
 
         {/* Captured image preview */}
         {capturedDataUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={capturedDataUrl}
             alt="Captured document"

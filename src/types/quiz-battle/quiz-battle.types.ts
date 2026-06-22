@@ -1,5 +1,3 @@
-import { QuestionBankItem } from "../study/question-bank.types";
-
 export type BattleStatus = "lobby" | "active" | "finished";
 export type ParticipantStatus = "joined" | "playing" | "finished";
 

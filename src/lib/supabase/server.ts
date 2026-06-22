@@ -8,17 +8,7 @@ export async function createClient() {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    if (process.env.NODE_ENV === "production" && !process.env.NEXT_PHASE) {
-      throw new Error("Missing Supabase environment variables");
-    }
-    return createServerClient<Database>("https://placeholder.supabase.co", "placeholder", {
-      cookies: {
-        getAll() {
-          return [];
-        },
-        setAll() {},
-      },
-    });
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables");
   }
 
   const cookieStore = await cookies();

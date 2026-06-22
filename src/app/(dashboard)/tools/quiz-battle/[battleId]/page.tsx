@@ -15,7 +15,7 @@ import {
 import { QuizBattle, BattleParticipant, BattleScore } from "@/types/quiz-battle/quiz-battle.types";
 import { QuestionBankItem } from "@/types/study/question-bank.types";
 import { Button } from "@/components/ui/button";
-import { Loader2, Swords, Clock, Users, Trophy, ChevronRight, XCircle, Database } from "lucide-react";
+import { Loader2, Swords, Clock, Trophy, ChevronRight, Database } from "lucide-react";
 
 export default function QuizBattlePage() {
   const { battleId } = useParams() as { battleId: string };
@@ -36,6 +36,50 @@ export default function QuizBattlePage() {
   const [isFinished, setIsFinished] = useState(false);
 
   // Initialize
+  const fetchQuestions = useCallback(async (limit: number, collectionId: string | null) => {
+    const res = await getBattleQuestionsAction(battleId, limit, collectionId);
+    if (res.success && res.data) {
+      setQuestions(res.data);
+      setTimeRemaining(30);
+    }
+  }, [battleId]);
+
+  const handleNextQuestion = useCallback(async (forcedAnswer?: string) => {
+    setIsSubmitting(true);
+    const answer = forcedAnswer || selectedAnswer || "";
+    const question = questions[currentQuestionIndex];
+    const isCorrect = answer === question.answer; // In a real app we might do semantic matching or strict multiple choice
+
+    await submitAnswerAction(battleId, question.id, answer, isCorrect, 30 - timeRemaining);
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(null);
+      setTimeRemaining(30);
+      setIsSubmitting(false);
+    } else {
+      // Finish
+      setIsFinished(true);
+      await finishBattleAction(battleId);
+    }
+  }, [battleId, selectedAnswer, questions, currentQuestionIndex, timeRemaining]);
+
+  const handleStartBattle = async () => {
+    await updateBattleStatusAction(battleId, "active");
+  };
+
+  const handleJoinBattle = async () => {
+    const res = await joinBattleAction(battleId);
+    if (res.success) {
+      const payload = await getBattlePayloadAction(battleId);
+      if (payload.success && payload.data) setParticipants(payload.data.participants);
+    }
+  };
+
+  const handleLeaveBattle = async () => {
+    await leaveBattleAction(battleId);
+    router.push("/dashboard/collaboration");
+  };
   useEffect(() => {
     async function init() {
       const supabase = createClient();
@@ -86,7 +130,7 @@ export default function QuizBattlePage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [battleId, questions.length]);
+  }, [battleId, questions.length, fetchQuestions]);
 
   // Timer logic for gameplay
   useEffect(() => {
@@ -98,57 +142,15 @@ export default function QuizBattlePage() {
     } else {
       // Time's up for this question, auto submit wrong
       if (!selectedAnswer && !isSubmitting) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         handleNextQuestion("TIMEOUT_WRONG");
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeRemaining, battle?.status, isFinished, questions.length]);
+  }, [timeRemaining, battle?.status, isFinished, questions.length, handleNextQuestion]);
 
 
-  const fetchQuestions = async (limit: number, collectionId: string | null) => {
-    const res = await getBattleQuestionsAction(battleId, limit, collectionId);
-    if (res.success && res.data) {
-      setQuestions(res.data);
-      setTimeRemaining(30);
-    }
-  };
 
-  const handleStartBattle = async () => {
-    await updateBattleStatusAction(battleId, "active");
-  };
-
-  const handleJoinBattle = async () => {
-    const res = await joinBattleAction(battleId);
-    if (res.success) {
-      const payload = await getBattlePayloadAction(battleId);
-      if (payload.success && payload.data) setParticipants(payload.data.participants);
-    }
-  };
-
-  const handleLeaveBattle = async () => {
-    await leaveBattleAction(battleId);
-    router.push("/dashboard/collaboration");
-  };
-
-  const handleNextQuestion = async (forcedAnswer?: string) => {
-    setIsSubmitting(true);
-    const answer = forcedAnswer || selectedAnswer || "";
-    const question = questions[currentQuestionIndex];
-    const isCorrect = answer === question.answer; // In a real app we might do semantic matching or strict multiple choice
-
-    await submitAnswerAction(battleId, question.id, answer, isCorrect, 30 - timeRemaining);
-
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedAnswer(null);
-      setTimeRemaining(30);
-      setIsSubmitting(false);
-    } else {
-      // Finish
-      setIsFinished(true);
-      await finishBattleAction(battleId);
-    }
-  };
 
 
   if (loading) return <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>;

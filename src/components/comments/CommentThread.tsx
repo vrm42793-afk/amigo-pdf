@@ -26,6 +26,15 @@ export default function CommentThread({ entityType, entityId }: CommentThreadPro
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const loadComments = React.useCallback(async () => {
+    setIsLoading(true);
+    const res = await getCommentsAction(entityType, entityId);
+    if (res.success && res.data) {
+      setComments(res.data);
+    }
+    setIsLoading(false);
+  }, [entityType, entityId]);
+
   useEffect(() => {
     async function init() {
       const supabase = createClient();
@@ -34,17 +43,7 @@ export default function CommentThread({ entityType, entityId }: CommentThreadPro
       loadComments();
     }
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entityId, entityType]);
-
-  const loadComments = async () => {
-    setIsLoading(true);
-    const res = await getCommentsAction(entityType, entityId);
-    if (res.success && res.data) {
-      setComments(res.data);
-    }
-    setIsLoading(false);
-  };
+  }, [loadComments]);
 
   const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +59,7 @@ export default function CommentThread({ entityType, entityId }: CommentThreadPro
     if (res.success && res.data) {
       setNewComment("");
       // Add the new parent comment directly to state
-      setComments(prev => [...prev, res.data as any]);
+      setComments(prev => [...prev, res.data as unknown as CommentRow]);
     }
     setIsSubmitting(false);
   };
@@ -77,7 +76,7 @@ export default function CommentThread({ entityType, entityId }: CommentThreadPro
       // Append reply to the correct parent in state
       setComments(prev => prev.map(p => {
         if (p.id === parentId) {
-          return { ...p, replies: [...(p.replies || []), res.data as any] };
+          return { ...p, replies: [...(p.replies || []), res.data as unknown as CommentRow] };
         }
         return p;
       }));
@@ -92,13 +91,13 @@ export default function CommentThread({ entityType, entityId }: CommentThreadPro
           if (p.id === parentId) {
             return {
               ...p,
-              replies: (p.replies || []).map(r => r.id === commentId ? res.data as any : r)
+              replies: (p.replies || []).map(r => r.id === commentId ? res.data as unknown as CommentRow : r)
             };
           }
           return p;
         }));
       } else {
-        setComments(prev => prev.map(p => p.id === commentId ? res.data as any : p));
+        setComments(prev => prev.map(p => p.id === commentId ? res.data as unknown as CommentRow : p));
       }
     }
   };

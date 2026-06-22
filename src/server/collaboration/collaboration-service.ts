@@ -35,7 +35,7 @@ export class CollaborationService {
     }
 
     // 2. Check if already friends or pending
-    const { data: existing, error: checkError } = await supabase
+    const { data: existing } = await supabase
       .from("friendships")
       .select("status")
       .eq("user_id", userId)
@@ -129,7 +129,7 @@ export class CollaborationService {
 
     return {
       friends: data as unknown as Friendship[],
-      incomingRequests: incoming as any[],
+      incomingRequests: incoming as unknown as Friendship[],
     };
   }
 
@@ -276,16 +276,17 @@ export class CollaborationService {
 
     // Resolve owner details for each collection
     const resolved = await Promise.all(
-      (data || []).map(async (sc: any) => {
-        if (sc.collection && sc.collection.user_id) {
+      (data || []).map(async (sc) => {
+        const item = sc as SharedCollection & { collection?: { user_id: string } & Record<string, unknown> };
+        if (item.collection && item.collection.user_id) {
           const { data: owner } = await supabase
             .from("users")
             .select("id, name, email, avatar")
-            .eq("id", sc.collection.user_id)
+            .eq("id", item.collection.user_id)
             .maybeSingle();
-          sc.owner = owner;
+          item.owner = owner || undefined;
         }
-        return sc;
+        return item;
       })
     );
 

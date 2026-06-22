@@ -5,12 +5,13 @@ import Script from "next/script";
 import { getUserFilesAction } from "@/actions/files/list-files";
 import { getRevisionNotesAction } from "@/actions/study/study-actions";
 import { FileRow } from "@/types/files.types";
-import { Sparkles, AlertCircle, CheckCircle, RefreshCw, GitFork, Download, Maximize2 } from "lucide-react";
+import { Sparkles, AlertCircle, CheckCircle, RefreshCw, GitFork, Download } from "lucide-react";
 
 // Declared global for CDN script usage
 declare global {
   interface Window {
-    mermaid?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mermaid: any;
   }
 }
 
@@ -57,6 +58,7 @@ export default function MindmapPage() {
           useMaxWidth: true,
         }
       });
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMermaidLoaded(true);
     }
   }, []);
@@ -82,6 +84,7 @@ export default function MindmapPage() {
   // Re-render when syntax changes or Mermaid loads
   useEffect(() => {
     if (mermaidSyntax && mermaidLoaded) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       renderDiagram(mermaidSyntax);
     }
   }, [mermaidSyntax, mermaidLoaded]);

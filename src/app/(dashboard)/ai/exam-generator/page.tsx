@@ -59,6 +59,7 @@ export default function ExamGeneratorPage() {
 
   useEffect(() => {
     if (!selectedFile) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadExams();
   }, [selectedFile, loadExams]);
 

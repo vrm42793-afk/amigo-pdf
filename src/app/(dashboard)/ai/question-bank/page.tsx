@@ -25,8 +25,6 @@ import {
   Trash2,
   ChevronDown,
   ChevronUp,
-  BookOpen,
-  BarChart3,
   Search,
   Eye,
   EyeOff,
@@ -129,6 +127,7 @@ export default function QuestionBankPage() {
   }, [filterSubject, filterUnit, filterDifficulty, filterMarks]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadQuestions();
   }, [loadQuestions]);
 
