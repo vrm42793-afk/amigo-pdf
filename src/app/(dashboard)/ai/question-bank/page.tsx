@@ -286,9 +286,13 @@ export default function QuestionBankPage() {
               {loadingFiles ? (
                 <div className="h-9 w-full bg-muted animate-pulse rounded-md" />
               ) : files.length === 0 ? (
-                <div className="text-sm text-yellow-600 bg-yellow-50 dark:bg-yellow-950/20 dark:text-yellow-400 p-3 rounded-md flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4" />
-                  Please upload a PDF file first.
+                <div className="flex flex-col items-center justify-center p-6 text-center border border-dashed border-border rounded-xl bg-muted/30">
+                  <AlertCircle className="h-6 w-6 text-yellow-500 mb-2" />
+                  <p className="text-sm font-semibold text-foreground mb-1">No Documents Found</p>
+                  <p className="text-xs text-muted-foreground mb-4">You need to upload a PDF to your vault before using this feature.</p>
+                  <a href="/dashboard" className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2">
+                    Upload a PDF
+                  </a>
                 </div>
               ) : (
                 <select
