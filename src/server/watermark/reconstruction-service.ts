@@ -1,5 +1,5 @@
 import { createCanvas } from "canvas";
-import * as pdfjsLib from "pdfjs-dist";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { PDFDocument } from "pdf-lib";
 import { WatermarkDetectionService } from "./detection-service";
 import { WatermarkInpaintingService } from "./inpainting-service";

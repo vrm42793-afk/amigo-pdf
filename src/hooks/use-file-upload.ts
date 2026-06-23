@@ -127,7 +127,7 @@ export function useFileUpload() {
           // Invalidate file list cache
           queryClient.invalidateQueries({ queryKey: ["files"] });
         } catch (err) {
-          let message = err instanceof Error ? err.message : "Upload failed";
+          const message = err instanceof Error ? err.message : "Upload failed";
           updateQueueItem(item.id, { status: "error", errorMessage: message, progress: 0 });
           toast.error(`Failed to upload ${file.name}: ${message}`);
         }

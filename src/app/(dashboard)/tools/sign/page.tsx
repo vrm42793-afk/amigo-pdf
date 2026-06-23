@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { getUserFilesAction } from "@/actions/files/list-files";
 import { FileRow } from "@/types/files.types";
-import { SignatureWorkspace } from "@/components/signatures/signature-workspace";
+import dynamic from "next/dynamic";
+const SignatureWorkspace = dynamic(() => import("@/components/signatures/signature-workspace").then(mod => mod.SignatureWorkspace), { ssr: false });
 import { PenTool, FileText, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { ToolPageLayout } from "@/components/ui-premium/surfaces/tool-page-layout";
