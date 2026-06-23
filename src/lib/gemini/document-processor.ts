@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { chunkDocument } from "./chunking";
 import { getEmbeddingsBatch } from "./embeddings";
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+import { cloudinary } from "@/lib/cloudinary/client";
 
 export class DocumentProcessor {
   /**
@@ -58,7 +59,7 @@ export class DocumentProcessor {
     // 2. Fetch file URL from database
     const { data: file, error: fileError } = await supabase
       .from("files")
-      .select("cloudinary_secure_url, name, type, ocr_text")
+      .select("cloudinary_secure_url, cloudinary_public_id, name, type, ocr_text")
       .eq("id", fileId)
       .eq("user_id", userId)
       .maybeSingle();
@@ -69,9 +70,18 @@ export class DocumentProcessor {
 
     let pages: { pageNumber: number; text: string }[] = [];
 
+    let fetchUrl = file.cloudinary_secure_url;
+    if (file.cloudinary_public_id) {
+      fetchUrl = cloudinary.url(file.cloudinary_public_id, {
+        resource_type: "raw",
+        sign_url: true,
+        secure: true
+      });
+    }
+
     // 3. Perform text extraction
     if (file.type === "application/pdf") {
-      pages = await this.extractTextFromPdfUrl(file.cloudinary_secure_url);
+      pages = await this.extractTextFromPdfUrl(fetchUrl);
     } else {
       // Fallback for non-PDF files (images / text files / Word documents, etc.)
       // We can use the file name and ocr_text if available
