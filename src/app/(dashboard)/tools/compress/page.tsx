@@ -5,6 +5,7 @@ import { PdfToolLayout } from "@/components/pdf/pdf-tool-layout";
 import { compressPdfAction } from "@/actions/pdf/compress-pdf";
 import type { ProcessResult } from "@/components/pdf/pdf-tool-layout";
 import type { CompressionLevel } from "@/types/pdf/pdf.types";
+import { Minimize2 } from "lucide-react";
 
 const LEVELS: { value: CompressionLevel; label: string; hint: string }[] = [
   { value: "low", label: "Low", hint: "Fastest, minimal compression" },
@@ -19,26 +20,25 @@ export default function CompressPage() {
     <PdfToolLayout
       title="Compress PDF"
       description="Reduce PDF file size while preserving readability."
+      icon={<Minimize2 className="h-6 w-6 text-accent" />}
       outputFileName="compressed.pdf"
       controlsSlot={
-        <div className="space-y-2">
-          <p className="text-xs font-medium text-foreground">Compression Level</p>
-          <div className="grid grid-cols-3 gap-2">
+        <div className="space-y-3">
+          <p className="text-sm font-bold text-foreground tracking-tight">Compression Level</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {LEVELS.map((l) => (
               <button
                 key={l.value}
                 type="button"
-                name="level"
-                value={l.value}
                 onClick={() => setLevel(l.value)}
-                className={`rounded-lg border px-3 py-3 text-center transition-all ${
+                className={`glass-panel rounded-xl px-4 py-4 text-center transition-all duration-200 ${
                   level === l.value
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border bg-card text-foreground hover:border-primary/40"
+                    ? "border-accent bg-accent/10 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                    : "border-surface-border bg-surface/50 hover:border-accent/40 hover:bg-surface-hover"
                 }`}
               >
-                <p className="text-sm font-semibold">{l.label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{l.hint}</p>
+                <p className={`text-sm font-bold ${level === l.value ? "text-accent" : "text-foreground"}`}>{l.label}</p>
+                <p className={`text-[11px] font-medium mt-1 ${level === l.value ? "text-accent/80" : "text-muted-foreground"}`}>{l.hint}</p>
               </button>
             ))}
           </div>

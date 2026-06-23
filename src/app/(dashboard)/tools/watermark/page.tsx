@@ -4,7 +4,8 @@ import { useState } from "react";
 import { PdfToolLayout } from "@/components/pdf/pdf-tool-layout";
 import { addWatermarkAction } from "@/actions/pdf/watermark";
 import type { ProcessResult } from "@/components/pdf/pdf-tool-layout";
-import { Input } from "@/components/ui/input";
+import { GlassInput } from "@/components/ui-premium/inputs/glass-input";
+import { Stamp } from "lucide-react";
 
 export default function WatermarkPage() {
   const [watermarkText, setWatermarkText] = useState("CONFIDENTIAL");
@@ -13,22 +14,23 @@ export default function WatermarkPage() {
     <PdfToolLayout
       title="Add Watermark"
       description="Stamp a custom text watermark diagonally across all pages of your PDF."
+      icon={<Stamp className="h-6 w-6 text-accent" />}
       acceptMultiple={false}
       outputFileName="watermarked.pdf"
       controlsSlot={
-        <div className="space-y-2 p-4 border border-border bg-card rounded-xl shadow-sm">
-          <label className="text-sm font-semibold text-foreground">
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-foreground tracking-tight">
             Watermark Text
           </label>
-          <Input
+          <GlassInput
             name="text"
             value={watermarkText}
             onChange={(e) => setWatermarkText(e.target.value)}
             placeholder="e.g. DRAFT, CONFIDENTIAL, DO NOT COPY"
-            className="w-full bg-background"
+            className="w-full h-10"
             required
           />
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs font-medium text-muted-foreground mt-1">
             This text will be applied as a light gray overlay across the center of every page.
           </p>
         </div>

@@ -6,6 +6,10 @@ import { FileRow } from "@/types/files.types";
 import { SignatureWorkspace } from "@/components/signatures/signature-workspace";
 import { PenTool, FileText, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { ToolPageLayout } from "@/components/ui-premium/surfaces/tool-page-layout";
+import { GlassButton } from "@/components/ui-premium/inputs/glass-button";
+import { GlassCard } from "@/components/ui-premium/surfaces/glass-card";
+import { motion } from "framer-motion";
 
 export default function SignDocumentPage() {
   const [files, setFiles] = useState<FileRow[]>([]);
@@ -32,87 +36,77 @@ export default function SignDocumentPage() {
 
   if (selectedFile) {
     return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-              <PenTool className="h-5.5 w-5.5 text-primary" />
-              Signing Document: {selectedFile.name}
-            </h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Drag, drop, resize, and place signatures or dates on the PDF pages.
-            </p>
-          </div>
-          <button
+      <ToolPageLayout
+        title={`Signing Document: ${selectedFile.name}`}
+        description="Drag, drop, resize, and place signatures or dates on the PDF pages."
+        icon={<PenTool className="h-6 w-6 text-accent" />}
+      >
+        <div className="flex justify-end mb-4">
+          <GlassButton
             onClick={() => setSelectedFile(null)}
-            className="h-8 px-3 border border-border hover:bg-muted text-foreground text-xs font-semibold rounded-lg transition-colors"
+            variant="secondary"
+            size="sm"
           >
             Back to Select File
-          </button>
+          </GlassButton>
         </div>
-
         <SignatureWorkspace
           file={selectedFile}
           onClose={() => setSelectedFile(null)}
         />
-      </div>
+      </ToolPageLayout>
     );
   }
 
   return (
-    <div className="max-w-xl mx-auto space-y-6 pt-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-          <PenTool className="h-6 w-6 text-primary" />
-          E-Signature Tool
-        </h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          Select a PDF document from your vault to begin placement of signatures.
-        </p>
+    <ToolPageLayout
+      title="E-Signature Tool"
+      description="Select a PDF document from your vault to begin placement of signatures."
+      icon={<PenTool className="h-6 w-6 text-accent" />}
+    >
+      <div className="space-y-4">
+        <label className="text-sm font-bold text-foreground tracking-tight block">
+          Select Document to Sign
+        </label>
+        
+        {loadingFiles ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 text-accent animate-spin" />
+          </div>
+        ) : files.length === 0 ? (
+          <GlassCard className="text-sm text-yellow-600 border-yellow-500/30 bg-yellow-500/5 p-5 flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 shrink-0" />
+            <span className="font-semibold">Please upload a PDF file in the Dashboard/My Files first!</span>
+          </GlassCard>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+            {files
+              .filter((f) => f.type.includes("pdf"))
+              .map((f, i) => (
+                <motion.button
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  key={f.id}
+                  onClick={() => setSelectedFile(f)}
+                  className="w-full flex items-center justify-between p-4 rounded-xl glass-panel hover:bg-surface-hover hover:border-accent/40 text-left transition-all group"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="h-8 w-8 rounded-lg bg-surface flex items-center justify-center shrink-0 shadow-sm group-hover:shadow-[0_0_15px_rgba(212,175,55,0.2)] transition-shadow">
+                      <FileText className="h-4.5 w-4.5 text-accent shrink-0" />
+                    </div>
+                    <span className="text-sm font-bold truncate text-foreground pr-2">
+                      {f.name}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground shrink-0 group-hover:text-accent transition-colors">
+                    Sign &rarr;
+                  </span>
+                </motion.button>
+              ))}
+          </div>
+        )}
       </div>
-
-      <div className="border border-border bg-card rounded-xl p-6 shadow-sm space-y-4">
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground block">
-            Select Document to Sign
-          </label>
-          
-          {loadingFiles ? (
-            <div className="flex items-center justify-center py-6">
-              <Loader2 className="h-6 w-6 text-primary animate-spin" />
-            </div>
-          ) : files.length === 0 ? (
-            <div className="text-sm text-yellow-600 bg-yellow-50 dark:bg-yellow-950/20 dark:text-yellow-400 p-4 rounded-lg flex items-center gap-2.5">
-              <AlertCircle className="h-5 w-5 shrink-0" />
-              <span>Please upload a PDF file in the Dashboard/My Files first!</span>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="grid grid-cols-1 gap-2 max-h-[300px] overflow-y-auto pr-1">
-                {files
-                  .filter((f) => f.type.includes("pdf"))
-                  .map((f) => (
-                    <button
-                      key={f.id}
-                      onClick={() => setSelectedFile(f)}
-                      className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:border-primary/40 hover:bg-muted/30 text-left transition-all group"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <FileText className="h-4.5 w-4.5 text-primary shrink-0" />
-                        <span className="text-xs font-medium truncate text-foreground pr-2">
-                          {f.name}
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-muted-foreground shrink-0 group-hover:text-primary transition-colors">
-                        Select & Sign &rarr;
-                      </span>
-                    </button>
-                  ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    </ToolPageLayout>
   );
 }

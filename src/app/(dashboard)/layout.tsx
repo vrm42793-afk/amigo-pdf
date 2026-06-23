@@ -5,6 +5,8 @@ import { MobileUploadFab } from "@/components/mobile/mobile-upload-fab";
 import { ProfileDropdown } from "@/components/dashboard/profile-dropdown";
 import { MobileNav } from "@/components/dashboard/mobile-nav";
 import { ThemeToggle } from "@/components/dashboard/theme-toggle";
+import { GlassSidebar, GlassSidebarItem } from "@/components/ui-premium/navigation/glass-sidebar";
+import { GlassButton } from "@/components/ui-premium/inputs/glass-button";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +16,6 @@ import {
   MessageSquare,
   BookOpen,
   StickyNote,
-  Wrench,
   HelpCircle,
   FileText,
   Folder,
@@ -97,48 +98,46 @@ export default async function DashboardLayout({
   if (!user) redirect("/login");
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      {/* Sidebar */}
-      <aside className="hidden md:flex w-60 shrink-0 flex-col border-r border-border bg-card">
-        {/* Logo */}
-        <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground font-black text-sm shadow-md shadow-primary/20">
+    <div className="flex h-screen overflow-hidden bg-transparent">
+      {/* Premium Glass Sidebar */}
+      <GlassSidebar>
+        <div className="flex h-14 items-center gap-3 px-2 mb-6">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-primary-foreground font-black text-sm shadow-[0_0_15px_rgba(212,175,55,0.4)]">
             A
           </div>
-          <span className="text-sm font-bold tracking-tight">
-            AMIGO <span className="text-primary">PDF</span>
+          <span className="text-sm font-bold tracking-tight text-foreground">
+            AMIGO <span className="text-accent">PDF</span>
           </span>
           <div className="ml-auto">
-            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/20 text-accent border border-primary/30">
               AI
             </span>
           </div>
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 overflow-y-auto p-2 space-y-4 scrollbar-thin">
+        <nav className="flex-1 space-y-6">
           {navGroups.map((group) => (
             <div key={group.label}>
               {group.href ? (
-                <Link href={group.href} className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 hover:text-primary transition-colors flex items-center gap-1 group/header">
+                <Link href={group.href} className="px-2 mb-2 block text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-accent transition-colors">
                   {group.label}
                 </Link>
               ) : (
-                <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+                <p className="px-2 mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
                   {group.label}
                 </p>
               )}
-              <div className="space-y-0.5 mt-1">
+              <div className="space-y-1">
                 {group.items.map((item) => {
                   const Icon = item.icon;
+                  // TODO: determine active state via usePathname in a client component or here?
+                  // Since layout is Server Component, we pass active=false to all for now or refactor to client component.
+                  // We'll wrap links to make them functional.
                   return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-all group relative"
-                    >
-                      <Icon className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
-                      <span className="truncate">{item.label}</span>
+                    <Link key={item.href} href={item.href} className="block">
+                      <GlassSidebarItem icon={<Icon className="h-4 w-4" />}>
+                        {item.label}
+                      </GlassSidebarItem>
                     </Link>
                   );
                 })}
@@ -147,61 +146,64 @@ export default async function DashboardLayout({
           ))}
         </nav>
 
-        {/* Upgrade banner */}
-        <div className="p-3 border-t border-border">
-          <div className="rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 p-3 space-y-2">
-            <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-primary" />
+        <div className="mt-8 border-t border-surface-border pt-4">
+          <div className="glass-panel p-4 space-y-3 rounded-2xl relative overflow-hidden group">
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            
+            <div className="flex items-center gap-2 relative z-10">
+              <Zap className="h-4 w-4 text-accent" />
               <span className="text-xs font-bold text-foreground">Upgrade to Pro</span>
             </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Unlimited AI words, 5GB storage &amp; priority support.
+            <p className="text-[11px] text-muted-foreground relative z-10 leading-relaxed">
+              Unlimited AI, 5GB storage & priority support.
             </p>
-            <Link
-              href="/pricing"
-              className="block text-center text-[11px] font-bold py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-            >
-              Upgrade Now
+            <Link href="/pricing" className="block relative z-10">
+              <GlassButton variant="default" size="sm" className="w-full text-xs">
+                Upgrade Now
+              </GlassButton>
             </Link>
           </div>
         </div>
-      </aside>
+      </GlassSidebar>
 
-      {/* Main Content Area */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Topbar */}
-        <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4 md:px-6 gap-4">
-          <div className="flex items-center gap-3">
-            <MobileNav />
-            {/* Mobile logo */}
-            <div className="md:hidden flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground font-black text-xs shadow-sm">
-                A
+      {/* Main Content Area (offset by sidebar width on md screens) */}
+      <div className="flex flex-1 flex-col overflow-hidden md:ml-[19rem]">
+        {/* Floating Glass Header */}
+        <div className="p-4 md:p-6 pb-0 z-40">
+          <header className="glass-panel flex h-16 items-center justify-between rounded-2xl px-4 md:px-6 shadow-xl">
+            <div className="flex items-center gap-3">
+              <MobileNav />
+              <div className="md:hidden flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-primary-foreground font-black text-xs shadow-md">
+                  A
+                </div>
+                <span className="text-sm font-bold tracking-tight text-foreground">AMIGO PDF</span>
               </div>
-              <span className="text-sm font-bold tracking-tight">AMIGO PDF</span>
             </div>
-          </div>
 
-          {/* Quick actions */}
-          <div className="hidden md:flex items-center gap-2 flex-1 max-w-xs">
-            <Link
-              href="/dashboard/search"
-              className="flex-1 flex items-center gap-2 h-8 px-3 rounded-lg border border-border bg-muted/30 text-xs text-muted-foreground hover:border-primary/30 hover:bg-muted/60 transition-all"
-            >
-              <Search className="h-3.5 w-3.5" />
-              Search files...
-              <kbd className="ml-auto text-[10px] bg-background border border-border rounded px-1">⌘K</kbd>
-            </Link>
-          </div>
+            <div className="hidden md:flex flex-1 max-w-md mx-6">
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input 
+                  type="text" 
+                  placeholder="Search files..." 
+                  className="h-10 w-full rounded-xl border border-surface-border bg-surface/50 pl-10 pr-12 text-sm text-foreground transition-all hover:bg-surface focus:outline-none focus:ring-1 focus:ring-accent backdrop-blur-md"
+                />
+                <kbd className="absolute right-3 top-1/2 -translate-y-1/2 rounded bg-surface border border-surface-border px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground shadow-sm">
+                  ⌘K
+                </kbd>
+              </div>
+            </div>
 
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <ProfileDropdown />
-          </div>
-        </header>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <ProfileDropdown />
+            </div>
+          </header>
+        </div>
 
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 relative">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 relative z-10">
           {children}
           <MobileUploadFab />
         </main>

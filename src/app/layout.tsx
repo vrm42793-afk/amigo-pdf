@@ -1,14 +1,20 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { DM_Sans, Geist } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "sonner";
 import { PwaRegister } from "@/components/pwa/pwa-register";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { AuroraBackground } from "@/components/ui-premium/backgrounds/aurora-background";
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+});
+
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
 });
 
@@ -34,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${jakarta.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${geist.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -53,6 +59,7 @@ export default function RootLayout({
         >
           <QueryProvider>
             <AuthProvider>
+              <AuroraBackground />
               {children}
               <Toaster position="top-right" richColors />
               <PwaRegister />

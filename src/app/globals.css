@@ -1,20 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5f3ff;
-  --foreground: #1e1b4b;
+  --background: #fafafa;
+  --background-secondary: #f4f4f5;
+  --foreground: #050505;
+  --surface: rgba(0, 0, 0, 0.03);
+  --surface-hover: rgba(0, 0, 0, 0.05);
+  --surface-border: rgba(0, 0, 0, 0.08);
   --card: #ffffff;
-  --card-foreground: #1e1b4b;
+  --card-foreground: #050505;
   --popover: #ffffff;
-  --popover-foreground: #1e1b4b;
-  --primary: #6366f1;
-  --primary-foreground: #ffffff;
-  --secondary: #818cf8;
+  --popover-foreground: #050505;
+  --primary: #d4af37;
+  --primary-foreground: #050505;
+  --secondary: #3b82f6;
   --secondary-foreground: #ffffff;
-  --muted: #e0e7ff;
-  --muted-foreground: #4f46e5;
-  --accent: #10b981;
-  --accent-foreground: #ffffff;
+  --muted: #e4e4e7;
+  --muted-foreground: #71717a;
+  --accent: #d4af37;
+  --accent-foreground: #050505;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #e5e7eb;
@@ -24,20 +28,24 @@
 }
 
 .dark {
-  --background: #1e1b4b;
-  --foreground: #f5f3ff;
-  --card: #312e81;
-  --card-foreground: #f5f3ff;
-  --popover: #312e81;
-  --popover-foreground: #f5f3ff;
-  --primary: #6366f1;
-  --primary-foreground: #ffffff;
-  --secondary: #818cf8;
+  --background: #050505;
+  --background-secondary: #0c0a09;
+  --foreground: #fafafa;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --surface-border: rgba(255, 255, 255, 0.08);
+  --card: rgba(255, 255, 255, 0.04);
+  --card-foreground: #fafafa;
+  --popover: #0c0a09;
+  --popover-foreground: #fafafa;
+  --primary: #d4af37;
+  --primary-foreground: #050505;
+  --secondary: #3b82f6;
   --secondary-foreground: #ffffff;
-  --muted: #4338ca;
-  --muted-foreground: #c7d2fe;
-  --accent: #10b981;
-  --accent-foreground: #1e1b4b;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #d4af37;
+  --accent-foreground: #050505;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #1f2937;
@@ -47,7 +55,11 @@
 
 @theme {
   --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-border: var(--surface-border);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -74,23 +86,36 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-jakarta), system-ui, sans-serif;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
+  /* Premium Dark Mode ensures text renders crisp on dark backgrounds */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Glassmorphism utility */
-.glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* Base Utility Classes for Glassmorphism */
+.glass-panel {
+  background: var(--surface);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--surface-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px rgba(255, 255, 255, 0.08);
 }
 
-.dark .glass {
-  background: rgba(17, 24, 39, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+.glass-card {
+  background: var(--surface);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--surface-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px rgba(255, 255, 255, 0.08);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+.glass-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 20px 60px rgba(212, 175, 55, 0.18), inset 0 1px rgba(255, 255, 255, 0.12);
+}
+
+
 

@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { PdfToolLayout } from "@/components/pdf/pdf-tool-layout";
 import { splitPdfAction } from "@/actions/pdf/split-pdf";
-import { Input } from "@/components/ui/input";
+import { GlassInput } from "@/components/ui-premium/inputs/glass-input";
 import type { ProcessResult } from "@/components/pdf/pdf-tool-layout";
+import { Scissors } from "lucide-react";
 
 export default function SplitPage() {
   const [rangeString, setRangeString] = useState("1-3, 4-6");
@@ -13,20 +14,22 @@ export default function SplitPage() {
     <PdfToolLayout
       title="Split PDF"
       description="Divide a PDF into multiple parts using page ranges."
+      icon={<Scissors className="h-6 w-6 text-accent" />}
       outputFileName="split.pdf"
       controlsSlot={
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-foreground" htmlFor="range-input">
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-foreground tracking-tight" htmlFor="range-input">
             Page Ranges
           </label>
-          <Input
+          <GlassInput
             id="range-input"
             name="rangeString"
             value={rangeString}
             onChange={(e) => setRangeString(e.target.value)}
             placeholder="e.g. 1-3, 4-6, 7"
+            className="w-full h-10"
           />
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs font-medium text-muted-foreground/80">
             Use commas to separate ranges. Each range produces one PDF.
           </p>
         </div>
