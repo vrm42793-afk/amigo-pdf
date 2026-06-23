@@ -26,7 +26,7 @@ export function DropZone({ onFilesSelected, isUploading = false }: DropZoneProps
   const handleFiles = useCallback(
     (files: FileList | null) => {
       if (!files) return;
-      const valid = Array.from(files).filter((f) => ALLOWED_TYPES.includes(f.type));
+      const valid = Array.from(files);
       if (valid.length > 0) onFilesSelected(valid);
     },
     [onFilesSelected]

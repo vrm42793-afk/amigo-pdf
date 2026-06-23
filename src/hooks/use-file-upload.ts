@@ -89,7 +89,10 @@ export function useFileUpload() {
             queryClient.invalidateQueries({ queryKey: ["files"] });
           }
         } catch (err) {
-          const message = err instanceof Error ? err.message : "Upload failed";
+          let message = err instanceof Error ? err.message : "Upload failed";
+          if (message.includes("413") || message.toLowerCase().includes("payload too large") || message.toLowerCase().includes("fetch failed")) {
+            message = "File exceeds Vercel 4.5MB limit for Server Actions. Please compress the file or upgrade to direct uploads.";
+          }
           updateQueueItem(item.id, { status: "error", errorMessage: message, progress: 0 });
           toast.error(`Failed to upload ${file.name}: ${message}`);
         }

@@ -23,6 +23,8 @@ import {
   Swords,
   ArrowRight,
   Sparkles,
+  Droplet,
+  FileImage,
 } from "lucide-react";
 
 const quickActions = [
@@ -93,6 +95,8 @@ const quickActions = [
 ];
 
 const pdfTools = [
+  { label: "Watermark", icon: Droplet, href: "/tools/watermark" },
+  { label: "Converter", icon: FileImage, href: "/tools/converter" },
   { label: "Merge PDFs", icon: Merge, href: "/tools/merge" },
   { label: "Split PDF", icon: Scissors, href: "/tools/split" },
   { label: "Compress", icon: Minimize2, href: "/tools/compress" },
@@ -190,11 +194,11 @@ export default function DashboardPage() {
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <h2 className="text-base font-bold text-foreground">PDF Tools</h2>
-          <Link href="/tools/merge" className="text-xs text-primary hover:underline ml-auto">
+          <Link href="/tools" className="text-xs text-primary hover:underline ml-auto">
             See all
           </Link>
         </div>
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-8 gap-3">
           {pdfTools.map((tool) => {
             const Icon = tool.icon;
             return (

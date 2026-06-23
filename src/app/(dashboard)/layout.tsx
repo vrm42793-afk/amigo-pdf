@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MobileUploadFab } from "@/components/mobile/mobile-upload-fab";
 import { ProfileDropdown } from "@/components/dashboard/profile-dropdown";
 import { MobileNav } from "@/components/dashboard/mobile-nav";
+import { ThemeToggle } from "@/components/dashboard/theme-toggle";
 
 export const dynamic = "force-dynamic";
 
@@ -193,7 +194,10 @@ export default async function DashboardLayout({
             </Link>
           </div>
 
-          <ProfileDropdown />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <ProfileDropdown />
+          </div>
         </header>
 
         {/* Page content */}
