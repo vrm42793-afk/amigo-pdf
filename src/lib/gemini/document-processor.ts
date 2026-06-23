@@ -71,7 +71,9 @@ export class DocumentProcessor {
     let pages: { pageNumber: number; text: string }[] = [];
 
     let fetchUrl = file.cloudinary_secure_url;
-    if (file.cloudinary_public_id) {
+
+    // If it's an old Cloudinary file, generate a signed URL to bypass 401 Strict Delivery
+    if (file.cloudinary_public_id && file.cloudinary_secure_url?.includes("res.cloudinary.com")) {
       fetchUrl = cloudinary.url(file.cloudinary_public_id, {
         resource_type: "raw",
         sign_url: true,
