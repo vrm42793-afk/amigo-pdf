@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { uploadFileAction } from "@/actions/files/upload-file";
 import type { UploadQueueItem } from "@/types/files.types";
-import { randomUUID } from "crypto";
+
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -37,7 +37,7 @@ export function useFileUpload() {
 
       for (const file of files) {
         const validationError = validateClientFile(file);
-        const id = randomUUID();
+        const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36);
 
         if (validationError) {
           toast.error(validationError);
