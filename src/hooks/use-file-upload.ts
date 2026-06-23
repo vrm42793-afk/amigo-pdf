@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { uploadFileAction } from "@/actions/files/upload-file";
+import { getUploadSignature } from "@/actions/files/get-upload-signature";
+import { saveFileRecordAction } from "@/actions/files/save-file-record";
 import type { UploadQueueItem } from "@/types/files.types";
 
 import { useQueryClient } from "@tanstack/react-query";
@@ -62,10 +63,23 @@ export function useFileUpload() {
         updateQueueItem(item.id, { status: "uploading", progress: 10 });
 
         try {
+          // 1. Get Signature
+          const sigRes = await getUploadSignature(file.name);
+          if (sigRes.error) {
+            throw new Error(sigRes.error);
+          }
+
+          // 2. Upload directly to Cloudinary
           const formData = new FormData();
           formData.append("file", file);
+          formData.append("api_key", sigRes.apiKey);
+          formData.append("timestamp", sigRes.timestamp.toString());
+          formData.append("signature", sigRes.signature);
+          formData.append("folder", sigRes.folder);
+          formData.append("public_id", sigRes.publicId);
+          formData.append("resource_type", "raw"); // Important for PDFs
 
-          // Simulate progress while uploading (real progress requires XHR)
+          // Simulate progress
           const progressInterval = setInterval(() => {
             setQueue((prev) =>
               prev.map((q) =>
@@ -76,23 +90,41 @@ export function useFileUpload() {
             );
           }, 300);
 
-          const result = await uploadFileAction(formData);
+          const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${sigRes.cloudName}/raw/upload`;
+          
+          const uploadRes = await fetch(cloudinaryUrl, {
+            method: "POST",
+            body: formData,
+          });
+
           clearInterval(progressInterval);
 
-          if (result.error) {
-            updateQueueItem(item.id, { status: "error", errorMessage: result.error, progress: 0 });
-            toast.error(`Failed to upload ${file.name}: ${result.error}`);
-          } else {
-            updateQueueItem(item.id, { status: "complete", progress: 100, result: result.file });
-            toast.success(`${file.name} uploaded successfully`);
-            // Invalidate file list cache
-            queryClient.invalidateQueries({ queryKey: ["files"] });
+          if (!uploadRes.ok) {
+            const errData = await uploadRes.json().catch(() => ({}));
+            throw new Error(errData.error?.message || `Cloudinary upload failed with status ${uploadRes.status}`);
           }
+
+          const uploadData = await uploadRes.json();
+
+          // 3. Save File Record
+          const result = await saveFileRecordAction({
+            fileName: file.name,
+            mimeType: file.type || "application/pdf",
+            fileSize: file.size,
+            publicId: uploadData.public_id,
+            secureUrl: uploadData.secure_url,
+          });
+
+          if (result.error) {
+            throw new Error(result.error);
+          }
+
+          updateQueueItem(item.id, { status: "complete", progress: 100, result: result.file });
+          toast.success(`${file.name} uploaded successfully`);
+          // Invalidate file list cache
+          queryClient.invalidateQueries({ queryKey: ["files"] });
         } catch (err) {
           let message = err instanceof Error ? err.message : "Upload failed";
-          if (message.includes("413") || message.toLowerCase().includes("payload too large") || message.toLowerCase().includes("fetch failed")) {
-            message = "File exceeds Vercel 4.5MB limit for Server Actions. Please compress the file or upgrade to direct uploads.";
-          }
           updateQueueItem(item.id, { status: "error", errorMessage: message, progress: 0 });
           toast.error(`Failed to upload ${file.name}: ${message}`);
         }
