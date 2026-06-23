@@ -130,7 +130,7 @@ export function FileCard({ file, view = "grid" }: FileCardProps) {
       layout
       whileHover={{ y: -2 }}
       transition={{ duration: 0.15 }}
-      className="group relative flex flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 transition-all"
+      className="group relative flex flex-col border-2 border-border bg-card p-4 hover:border-primary transition-colors duration-200"
     >
       <div className="flex items-start justify-between mb-3">
         <div className={`${iconColor} rounded-lg bg-muted p-2.5`}>
@@ -190,7 +190,7 @@ function FileContextMenu({ file, onClose, onRename, onDelete, isDeleting }: File
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div className="absolute right-0 top-7 z-50 w-44 rounded-lg border border-border bg-card shadow-lg py-1">
+      <div className="absolute right-0 top-7 z-50 w-44 border-2 border-border bg-card py-1">
         <a
           href={file.cloudinary_secure_url}
           target="_blank"

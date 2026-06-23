@@ -58,10 +58,10 @@ export function DropZone({ onFilesSelected, isUploading = false }: DropZoneProps
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
-      className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-10 text-center transition-all duration-200 cursor-pointer select-none min-h-[220px] ${
+      className={`relative flex flex-col items-center justify-center border-2 border-dashed p-10 text-center transition-colors duration-200 cursor-pointer select-none min-h-[220px] ${
         isDragging
-          ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
-          : "border-border bg-card/50 hover:border-primary/50 hover:bg-primary/5"
+          ? "border-primary bg-primary/10"
+          : "border-border bg-card hover:border-primary hover:bg-primary/5"
       }`}
       onClick={() => inputRef.current?.click()}
     >
@@ -85,7 +85,7 @@ export function DropZone({ onFilesSelected, isUploading = false }: DropZoneProps
             exit={{ opacity: 0, y: -8 }}
             className="flex flex-col items-center gap-3"
           >
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/20">
+            <div className="flex h-14 w-14 items-center justify-center bg-primary/20">
               <UploadCloud className="h-7 w-7 text-primary animate-bounce" />
             </div>
             <p className="text-base font-semibold text-primary">Drop to upload</p>
@@ -98,7 +98,7 @@ export function DropZone({ onFilesSelected, isUploading = false }: DropZoneProps
             exit={{ opacity: 0, y: -8 }}
             className="flex flex-col items-center gap-4"
           >
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+            <div className="flex h-14 w-14 items-center justify-center bg-muted">
               <UploadCloud className="h-7 w-7 text-muted-foreground" />
             </div>
             <div className="space-y-1">

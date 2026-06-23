@@ -87,7 +87,7 @@ export function ProfileDropdown() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 mt-2 w-64 origin-top-right rounded-lg border border-border bg-card p-2 shadow-lg focus:outline-none z-50"
+            className="absolute right-0 mt-2 w-64 origin-top-right border-2 border-border bg-card p-2 focus:outline-none z-50"
           >
             <div className="px-3 py-2 border-b border-border mb-2">
               <p className="text-sm font-semibold text-foreground truncate">{profile?.name || "User"}</p>
@@ -131,21 +131,21 @@ export function ProfileDropdown() {
                   <div className="flex bg-muted rounded-md border border-border">
                     <button
                       onClick={() => setTheme("light")}
-                      className={`p-1.5 rounded-sm transition-colors ${theme === "light" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                      className={`p-1.5 transition-colors ${theme === "light" ? "bg-background text-foreground border border-border" : "text-muted-foreground hover:text-foreground"}`}
                       title="Light Mode"
                     >
                       <Sun className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => setTheme("system")}
-                      className={`p-1.5 rounded-sm transition-colors ${theme === "system" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                      className={`p-1.5 transition-colors ${theme === "system" ? "bg-background text-foreground border border-border" : "text-muted-foreground hover:text-foreground"}`}
                       title="System Theme"
                     >
                       <Monitor className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => setTheme("dark")}
-                      className={`p-1.5 rounded-sm transition-colors ${theme === "dark" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                      className={`p-1.5 transition-colors ${theme === "dark" ? "bg-background text-foreground border border-border" : "text-muted-foreground hover:text-foreground"}`}
                       title="Dark Mode"
                     >
                       <Moon className="h-3.5 w-3.5" />

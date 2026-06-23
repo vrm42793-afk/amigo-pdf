@@ -21,7 +21,7 @@ export async function AiUsageStatisticsWidget() {
   const percentage = Math.min(Math.round((used / limit) * 100), 100);
 
   return (
-    <div className="border border-border bg-card rounded-xl p-5 shadow-sm space-y-4">
+    <div className="border-2 border-border bg-card p-5 space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold flex items-center gap-1.5 text-foreground">
           <Zap className="h-4 w-4 text-primary fill-primary/20" />
@@ -95,7 +95,7 @@ export async function RecentAiActivityWidget() {
     (decks && decks.length > 0);
 
   return (
-    <div className="border border-border bg-card rounded-xl p-5 shadow-sm space-y-4">
+    <div className="border-2 border-border bg-card p-5 space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold flex items-center gap-1.5 text-foreground">
           <Brain className="h-4 w-4 text-primary" />
