@@ -4,8 +4,9 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useUser } from "@/hooks/use-user";
 import { signOut } from "@/actions/auth";
+import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogOut, User, Settings, Database } from "lucide-react";
+import { LogOut, User, Settings, Database, Sun, Moon, Monitor } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -14,6 +15,12 @@ export function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -116,6 +123,37 @@ export function ProfileDropdown() {
                 <User className="h-4 w-4 text-muted-foreground" />
                 <span>My Profile</span>
               </button>
+
+              {/* Theme Toggle Sub-menu */}
+              {mounted && (
+                <div className="px-3 py-1 flex items-center justify-between mt-1 border-t border-border pt-2">
+                  <span className="text-xs font-semibold text-muted-foreground">Theme</span>
+                  <div className="flex bg-muted rounded-md border border-border">
+                    <button
+                      onClick={() => setTheme("light")}
+                      className={`p-1.5 rounded-sm transition-colors ${theme === "light" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                      title="Light Mode"
+                    >
+                      <Sun className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setTheme("system")}
+                      className={`p-1.5 rounded-sm transition-colors ${theme === "system" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                      title="System Theme"
+                    >
+                      <Monitor className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setTheme("dark")}
+                      className={`p-1.5 rounded-sm transition-colors ${theme === "dark" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                      title="Dark Mode"
+                    >
+                      <Moon className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <button
                 onClick={() => {
                   setIsOpen(false);

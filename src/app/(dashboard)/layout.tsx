@@ -34,6 +34,8 @@ import {
   PenLine,
   AlignJustify,
   Layers,
+  Droplet,
+  FileImage,
 } from "lucide-react";
 
 const navGroups = [
@@ -64,7 +66,10 @@ const navGroups = [
   },
   {
     label: "PDF Tools",
+    href: "/tools",
     items: [
+      { href: "/tools/watermark", label: "Watermark", icon: Droplet },
+      { href: "/tools/converter", label: "Converter", icon: FileImage },
       { href: "/tools/merge", label: "Merge PDFs", icon: Merge },
       { href: "/tools/split", label: "Split PDF", icon: Scissors },
       { href: "/tools/compress", label: "Compress", icon: Minimize2 },
@@ -113,9 +118,15 @@ export default async function DashboardLayout({
         <nav className="flex-1 overflow-y-auto p-2 space-y-4 scrollbar-thin">
           {navGroups.map((group) => (
             <div key={group.label}>
-              <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                {group.label}
-              </p>
+              {group.href ? (
+                <Link href={group.href} className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 hover:text-primary transition-colors flex items-center gap-1 group/header">
+                  {group.label}
+                </Link>
+              ) : (
+                <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+                  {group.label}
+                </p>
+              )}
               <div className="space-y-0.5 mt-1">
                 {group.items.map((item) => {
                   const Icon = item.icon;
