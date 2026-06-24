@@ -1,12 +1,13 @@
+import "@/lib/pdfjs-polyfill";
 import { createClient } from "@/lib/supabase/server";
 import { chunkDocument } from "./chunking";
 import { getEmbeddingsBatch } from "./embeddings";
-import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+const pdfParse = require("pdf-parse");
 import { cloudinary } from "@/lib/cloudinary/client";
 
 export class DocumentProcessor {
   /**
-   * Fetch PDF from Cloudinary URL and extract digital text page-by-page.
+   * Fetch PDF from Cloudinary URL and extract digital text using pdf-parse.
    */
   static async extractTextFromPdfUrl(url: string): Promise<{ pageNumber: number; text: string }[]> {
     const response = await fetch(url);
@@ -14,28 +15,16 @@ export class DocumentProcessor {
       throw new Error(`Failed to download file from URL. Status: ${response.status}`);
     }
     const arrayBuffer = await response.arrayBuffer();
-    const data = new Uint8Array(arrayBuffer);
+    const buffer = Buffer.from(arrayBuffer);
     
-    const pdfTask = getDocument({ data, useSystemFonts: true });
-    const pdfDocument = await pdfTask.promise;
-    const numPages = pdfDocument.numPages;
-    const pages: { pageNumber: number; text: string }[] = [];
-
-    for (let i = 1; i <= numPages; i++) {
-      try {
-        const page = await pdfDocument.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items
-          .map((item: unknown) => (item as { str: string }).str)
-          .join(" ");
-        pages.push({ pageNumber: i, text: pageText });
-      } catch (err) {
-        console.error(`Error extracting text from page ${i}:`, err);
-        pages.push({ pageNumber: i, text: "" });
-      }
+    try {
+      const pdfData = await pdfParse(buffer);
+      // Since pdf-parse returns all text combined, we treat it as one "page" for chunking
+      return [{ pageNumber: 1, text: pdfData.text }];
+    } catch (err) {
+      console.error("Error parsing PDF with pdf-parse:", err);
+      return [];
     }
-
-    return pages;
   }
 
   /**
@@ -74,8 +63,10 @@ export class DocumentProcessor {
 
     // If it's an old Cloudinary file, generate a signed URL to bypass 401 Strict Delivery
     if (file.cloudinary_public_id && file.cloudinary_secure_url?.includes("res.cloudinary.com")) {
+      const isImage = file.cloudinary_secure_url.includes("/image/upload/");
       fetchUrl = cloudinary.url(file.cloudinary_public_id, {
-        resource_type: "raw",
+        resource_type: isImage ? "image" : "raw",
+        type: "upload",
         sign_url: true,
         secure: true
       });

@@ -47,7 +47,6 @@ export class WatermarkReconstructionService {
       await page.render({
         canvasContext: context as unknown as CanvasRenderingContext2D,
         viewport: renderViewport,
-        canvas: canvas as unknown as HTMLCanvasElement,
       }).promise;
 
       const pagePngBuffer = canvas.toBuffer("image/png");

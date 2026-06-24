@@ -68,7 +68,7 @@ export async function convertImagesToPdfAction(formData: FormData): Promise<Conv
           width: image.width,
           height: image.height,
         });
-      } catch (e) {
+      } catch {
         return { error: `Failed to embed image ${file.name}` };
       }
     }

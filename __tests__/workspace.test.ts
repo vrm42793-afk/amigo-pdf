@@ -25,7 +25,7 @@ queryBuilder.single.mockImplementation(() => Promise.resolve(mockResolveValue));
 queryBuilder.maybeSingle.mockImplementation(() => Promise.resolve(mockResolveValue));
 
 const mockSupabase = {
-  from: vi.fn(() => queryBuilder),
+  from: vi.fn((_table: any) => queryBuilder),
   rpc: vi.fn(),
 };
 
@@ -66,7 +66,7 @@ describe("WorkspaceService Tests", () => {
 
   it("should add an item to collection", async () => {
     // Mock verify collection exists
-    mockSupabase.from.mockImplementationOnce((table) => {
+    mockSupabase.from.mockImplementationOnce((table: any) => {
       if (table === "collections") {
         return {
           select: () => ({

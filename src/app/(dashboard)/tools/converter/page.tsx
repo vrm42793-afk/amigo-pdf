@@ -40,7 +40,7 @@ export default function ConverterPage() {
         setResultBase64(result.buffer);
         toast.success("Converted successfully!");
       }
-    } catch (err) {
+    } catch {
       toast.error("Failed to convert images");
     } finally {
       setIsProcessing(false);

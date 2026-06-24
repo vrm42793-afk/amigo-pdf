@@ -10,7 +10,6 @@ import {
   Layers,
   ScanText,
   PenLine,
-  Type,
   FileImage,
   Wrench,
   Swords,

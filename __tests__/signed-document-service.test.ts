@@ -29,7 +29,7 @@ queryBuilder.insert.mockReturnValue(queryBuilder);
 queryBuilder.update.mockReturnValue(queryBuilder);
 
 const mockSupabase = {
-  from: vi.fn(() => queryBuilder),
+  from: vi.fn((_table: any) => queryBuilder),
 };
 
 vi.mock("@/lib/supabase/server", () => ({
@@ -94,7 +94,7 @@ describe("SignedDocumentService Tests", () => {
     // - File query: files table
     // - Profile query: users table
     // - Insert query: signed_documents table
-    mockSupabase.from.mockImplementation((table: string) => {
+    mockSupabase.from.mockImplementation((table: any) => {
       if (table === "files") {
         return {
           select: () => ({

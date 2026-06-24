@@ -6,7 +6,6 @@ import {
   FileText,
   Sparkles,
   Brain,
-  Shield,
   Zap,
   Users,
   ChevronRight,
@@ -14,13 +13,10 @@ import {
   Star,
   ArrowRight,
   Merge,
-  Scissors,
   FileSearch,
   BookOpen,
   MessageSquare,
   PenLine,
-  Layers,
-  BarChart3,
 } from "lucide-react";
 
 const features = [
@@ -88,7 +84,7 @@ const stats = [
 ];
 
 export default function LandingPage() {
-  const [mounted, setMounted] = useState(false);
+  const [, setMounted] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect

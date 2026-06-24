@@ -6,7 +6,6 @@ import type { UploadQueueItem } from "@/types/files.types";
 import { GlassCard } from "@/components/ui-premium/surfaces/glass-card";
 import { GlassButton } from "@/components/ui-premium/inputs/glass-button";
 import { GlassProgress } from "@/components/ui-premium/data-display/glass-progress";
-import { GlassBadge } from "@/components/ui-premium/data-display/glass-badge";
 
 interface UploadQueueProps {
   queue: UploadQueueItem[];

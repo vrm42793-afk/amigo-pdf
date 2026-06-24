@@ -6,8 +6,7 @@ insert into storage.buckets (id, name, public)
 values ('user_files', 'user_files', true)
 on conflict (id) do update set public = true;
 
--- Ensure RLS is enabled
-alter table storage.objects enable row level security;
+-- Ensure RLS is enabled (Skipped as it fails on Supabase remote due to ownership: alter table storage.objects enable row level security;)
 
 -- Policy: Users can upload their own files
 create policy "Users can upload their own files"

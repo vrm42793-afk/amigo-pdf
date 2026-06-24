@@ -3,7 +3,6 @@
 import { useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { saveFileRecordAction } from "@/actions/files/save-file-record";
-import { getUploadSignature } from "@/actions/files/get-upload-signature";
 import type { UploadQueueItem } from "@/types/files.types";
 
 import { useQueryClient } from "@tanstack/react-query";
@@ -64,11 +63,10 @@ export function useFileUpload() {
         updateQueueItem(item.id, { status: "uploading", progress: 10 });
 
         try {
-          // 1. Get Cloudinary Upload Signature
-          const signatureData = await getUploadSignature(file.name);
-          if (signatureData.error) {
-            throw new Error(signatureData.error);
-          }
+          // 1. Get User ID (to construct path)
+          const supabase = createClient();
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) throw new Error("User not authenticated");
 
           // Simulate progress
           const progressInterval = setInterval(() => {
@@ -81,36 +79,35 @@ export function useFileUpload() {
             );
           }, 300);
 
-          // 2. Upload directly to Cloudinary
-          const formData = new FormData();
-          formData.append("file", file);
-          formData.append("api_key", signatureData.apiKey);
-          formData.append("timestamp", signatureData.timestamp.toString());
-          formData.append("signature", signatureData.signature);
-          formData.append("folder", signatureData.folder);
-          formData.append("public_id", signatureData.publicId);
-
-          const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${signatureData.cloudName}/auto/upload`, {
-            method: "POST",
-            body: formData,
-          });
+          // 2. Upload directly to Supabase Storage
+          const fileExtension = file.name.split('.').pop();
+          const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+          const filePath = `${user.id}/${Date.now()}-${safeName}`;
+          
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('user_files')
+            .upload(filePath, file, {
+              cacheControl: '3600',
+              upsert: false
+            });
 
           clearInterval(progressInterval);
 
-          if (!uploadRes.ok) {
-            const errorData = await uploadRes.json();
-            throw new Error(errorData.error?.message || "Cloudinary upload failed");
+          if (uploadError) {
+            throw new Error(uploadError.message || "Supabase upload failed");
           }
 
-          const uploadData = await uploadRes.json();
+          const { data: urlData } = supabase.storage
+            .from('user_files')
+            .getPublicUrl(filePath);
 
           // 3. Save File Record to Supabase Database
           const result = await saveFileRecordAction({
             fileName: file.name,
             mimeType: file.type || "application/pdf",
             fileSize: file.size,
-            publicId: uploadData.public_id,
-            secureUrl: uploadData.secure_url,
+            publicId: uploadData.path,
+            secureUrl: urlData.publicUrl,
           });
 
           if (result.error) {

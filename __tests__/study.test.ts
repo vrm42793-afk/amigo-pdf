@@ -28,7 +28,7 @@ queryBuilder.single.mockImplementation(() => Promise.resolve(mockResolveValue));
 queryBuilder.maybeSingle.mockImplementation(() => Promise.resolve(mockResolveValue));
 
 const mockSupabase = {
-  from: vi.fn(() => queryBuilder),
+  from: vi.fn((_table: any) => queryBuilder),
 };
 
 vi.mock("@/lib/supabase/server", () => ({
@@ -82,7 +82,7 @@ describe("Study Intelligence Suite Tests", () => {
   describe("RevisionService & MindMapService", () => {
     it("should successfully generate revision study notes and cache them", async () => {
       // Mock DB return for file ownership
-      mockSupabase.from.mockImplementation((table: string) => {
+      mockSupabase.from.mockImplementation((table: any) => {
         if (table === "files") {
           return {
             select: () => ({
@@ -150,7 +150,7 @@ describe("Study Intelligence Suite Tests", () => {
         tokensOutput: 20,
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      mockSupabase.from.mockImplementation((table: any) => {
         if (table === "files") {
           return {
             select: () => ({
@@ -209,7 +209,7 @@ describe("Study Intelligence Suite Tests", () => {
 
   describe("ExamService JSON Mode compiler", () => {
     it("should compile a mock exam and individual questions from parsed JSON structure", async () => {
-      mockSupabase.from.mockImplementation((table: string) => {
+      mockSupabase.from.mockImplementation((table: any) => {
         if (table === "files") {
           return {
             select: () => ({
@@ -285,7 +285,7 @@ describe("Study Intelligence Suite Tests", () => {
   describe("SpacedRepetitionService SuperMemo-2 calculations", () => {
     it("should successfully calculate next repetition interval for rating 4 (correct)", async () => {
       // First review
-      mockSupabase.from.mockImplementation((table: string) => {
+      mockSupabase.from.mockImplementation((table: any) => {
         if (table === "flashcard_reviews") {
           return {
             select: () => ({
@@ -332,7 +332,7 @@ describe("Study Intelligence Suite Tests", () => {
         ease_factor: 2.5,
       };
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      mockSupabase.from.mockImplementation((table: any) => {
         if (table === "flashcard_reviews") {
           return {
             select: () => ({
@@ -377,7 +377,7 @@ describe("Study Intelligence Suite Tests", () => {
         ease_factor: 2.6,
       };
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      mockSupabase.from.mockImplementation((table: any) => {
         if (table === "flashcard_reviews") {
           return {
             select: () => ({
